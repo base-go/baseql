@@ -15,7 +15,7 @@ require (
 	github.com/pingcap/check v0.0.0-20211026125417-57bd13f7b5f0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rakyll/statik v0.1.5
-	github.com/samsarahq/go v0.0.0-20181026175739-13570df44b46
+	github.com/base-go/go v0.0.2
 	github.com/satori/go.uuid v0.0.0-20160218235746-e673fdd4dea8
 	github.com/siddontang/go v0.0.0-20161005110831-1e9ce2a5ac40 // indirect
 	github.com/siddontang/go-mysql v0.0.0-20160925014134-d8e777f00cdb
