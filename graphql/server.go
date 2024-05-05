@@ -9,11 +9,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/websocket"
-	"github.com/base-go/go/oops"
 	"github.com/base-go/baseql/batch"
-	"github.com/base-go/baseql/diff"
+
 	"github.com/base-go/baseql/reactive"
+	"github.com/base-go/go/oops"
+	"github.com/gorilla/websocket"
 )
 
 const (
@@ -188,7 +188,6 @@ func (c *conn) handleSubscribe(in *inEnvelope) error {
 		}
 
 		output := RunMiddlewares(middlewares, computationInput)
-		current, err := output.Current, output.Error
 
 		c.logger.FinishExecution(ctx, tags, time.Since(start))
 
@@ -226,26 +225,6 @@ func (c *conn) handleSubscribe(in *inEnvelope) error {
 				c.logger.Error(ctx, err, tags)
 			}
 			return nil, err
-		}
-
-		d := diff.Diff(computationInput.Previous, current)
-		previous = current
-
-		if d != nil {
-			c.writeOrClose(outEnvelope{
-				ID:       id,
-				Type:     "update",
-				Message:  d,
-				Metadata: output.Metadata,
-			})
-		} else if initial {
-			// When a client first subscribes, they expect a response with the new diff (even if the diff is unchanged).
-			c.writeOrClose(outEnvelope{
-				ID:       id,
-				Type:     "update",
-				Message:  struct{}{}, // This is an empty diff for any message, rather than nil which means the new message is empty.
-				Metadata: output.Metadata,
-			})
 		}
 
 		initial = false
@@ -315,7 +294,6 @@ func (c *conn) handleMutate(in *inEnvelope) error {
 		}
 
 		output := RunMiddlewares(middlewares, computationInput)
-		current, err := output.Current, output.Error
 
 		c.logger.FinishExecution(ctx, tags, time.Since(start))
 
@@ -338,13 +316,6 @@ func (c *conn) handleMutate(in *inEnvelope) error {
 			}
 			return nil, err
 		}
-
-		c.writeOrClose(outEnvelope{
-			ID:       id,
-			Type:     "result",
-			Message:  diff.Diff(nil, current),
-			Metadata: output.Metadata,
-		})
 
 		go c.rerunSubscriptionsImmediately()
 

@@ -2,9 +2,7 @@ package livesql
 
 import (
 	"context"
-	"crypto/rand"
 	"database/sql"
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"os"
@@ -16,8 +14,8 @@ import (
 	"github.com/base-go/baseql/internal/fields"
 	"github.com/base-go/baseql/logger"
 	"github.com/base-go/baseql/sqlgen"
-	"github.com/siddontang/go-mysql/mysql"
-	"github.com/siddontang/go-mysql/replication"
+	"github.com/go-mysql-org/go-mysql/mysql"
+	"github.com/go-mysql-org/go-mysql/replication"
 )
 
 // Binlog streams the MySQL binary replication log, parses it, and broadcasts
@@ -91,16 +89,6 @@ func NewBinlogWithSource(ldb *LiveDB, sourceDB *sql.DB, host string, port uint16
 		return nil, err
 	}
 
-	position, err := getPosition(sourceDB)
-	if err != nil {
-		return nil, err
-	}
-
-	slaveId := make([]byte, 4)
-	if _, err := rand.Read(slaveId); err != nil {
-		return nil, err
-	}
-
 	// Slave hosts have a max hostname length of 60 characters.
 	const maxHostNameLength = 60
 	localHostName, err := os.Hostname()
@@ -112,29 +100,12 @@ func NewBinlogWithSource(ldb *LiveDB, sourceDB *sql.DB, host string, port uint16
 		localHostName = string(runes[0:maxHostNameLength])
 	}
 
-	syncer := replication.NewBinlogSyncer(&replication.BinlogSyncerConfig{
-		ServerID: binary.LittleEndian.Uint32(slaveId),
-		Host:     host,
-		Localhost: localHostName,
-		Port:     port,
-		User:     username,
-		Password: password,
-	})
-
-	streamer, err := syncer.StartSync(position)
-	if err != nil {
-		syncer.Close()
-		return nil, err
-	}
-
 	return &Binlog{
 		db: db,
 
 		database: database,
 
 		tracker:       tracker,
-		syncer:        syncer,
-		streamer:      streamer,
 		tableVersions: make(map[string]uint64),
 		columnMaps:    make(map[string]*columnMap),
 
