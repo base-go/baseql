@@ -1,0 +1,71 @@
+[
+  {
+    "Name": "batchExecutor:Directive include top level selection",
+    "Values": [
+      {
+        "items": [
+          {
+            "__key": 1,
+            "id": 1,
+            "name": "1"
+          },
+          {
+            "__key": 2,
+            "id": 2,
+            "name": "2"
+          },
+          {
+            "__key": 3,
+            "id": 3,
+            "name": "3"
+          },
+          {
+            "__key": 4,
+            "id": 4,
+            "name": "4"
+          },
+          {
+            "__key": 5,
+            "id": 5,
+            "name": "5"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Name": "batchExecutor:Directive don't include top level selection",
+    "Values": [
+      {}
+    ]
+  },
+  {
+    "Name": "batchExecutor:Directive include nested selection",
+    "Values": [
+      {
+        "items": [
+          {
+            "__key": 1,
+            "id": 1
+          },
+          {
+            "__key": 2,
+            "id": 2
+          },
+          {
+            "__key": 3,
+            "id": 3
+          },
+          {
+            "__key": 4,
+            "id": 4
+          },
+          {
+            "__key": 5,
+            "id": 5
+          }
+        ]
+      }
+    ]
+  }
+]

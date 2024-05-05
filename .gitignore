@@ -1,0 +1,11 @@
+node_modules/
+.swp
+.swo
+.*.swp
+.*.swo
+experimental/
+*~
+
+.rpt2_cache/
+
+federation/testdata/temp/*
